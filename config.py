@@ -5,6 +5,9 @@ Configuration settings for the cutting optimization application.
 # Default bar length in mm
 DEFAULT_BAR_LENGTH = 3000
 
+# Default saw blade kerf (cutting width) in mm
+DEFAULT_KERF = 3.0
+
 # Excel column mappings (0-indexed)
 EXCEL_COLUMNS = {
     'length': 0,      # Column A: Length (Länge)

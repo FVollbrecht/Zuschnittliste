@@ -4,12 +4,14 @@ Modern Python application for optimizing material cutting lists using the **Firs
 
 ## 🎯 Features
 
-- ✅ **BFD Algorithm**: Best Fit Decreasing for optimal material efficiency
+- ✅ **3 Algorithms**: BFD, FFD, and Heuristic - choose the best for your data
 - ✅ **Material Grouping**: Separate optimization for different materials
 - ✅ **Multiplier**: Scale entire cutting list for series production
+- ✅ **Saw Kerf**: Accounts for blade thickness/cutting loss
+- ✅ **Visual Bars**: SVG visualization of cuts on each bar
 - ✅ **Excel I/O**: Read from and write to Excel files
 - ✅ **Web Interface**: User-friendly Streamlit UI
-- ✅ **Visualizations**: Charts for efficiency and waste analysis
+- ✅ **Charts**: Efficiency and waste analysis with plotly
 - ✅ **Statistics**: Comprehensive optimization metrics
 - ✅ **Multi-language**: German interface for cutting industry
 
@@ -179,18 +181,20 @@ Zuschnittliste/
 
 ## 🆚 Improvements over VBA Version
 
-1. **BFD Algorithm**: Better efficiency than FFD (First Fit Decreasing)
-2. **Multiplier Feature**: Scale entire cutting list for series production
-3. **Web Interface**: No Excel required for operation
-4. **Visualizations**: Interactive charts and graphs
-5. **Better Structure**: Modular, maintainable code
-6. **Modern Stack**: Python, Streamlit, pandas
-7. **Cross-platform**: Works on Windows, Mac, Linux
-8. **Type Safety**: Type hints for better code quality
-9. **Documentation**: Comprehensive inline documentation
-10. **Error Handling**: Robust error management
-11. **Testing Ready**: Structure supports unit tests
-12. **Extensible**: Easy to add new features
+1. **Multiple Algorithms**: BFD, FFD, and Heuristic - not just one approach
+2. **Saw Kerf Support**: Realistic cutting loss calculation
+3. **Visual Bars**: See exactly how cuts are arranged on each bar
+4. **Multiplier Feature**: Scale entire cutting list for series production
+5. **Web Interface**: No Excel required for operation
+6. **Interactive Charts**: Real-time efficiency and waste visualization
+7. **Better Structure**: Modular, maintainable code
+8. **Modern Stack**: Python, Streamlit, pandas, plotly
+9. **Cross-platform**: Works on Windows, Mac, Linux
+10. **Type Safety**: Type hints for better code quality
+11. **Documentation**: Comprehensive inline documentation
+12. **Error Handling**: Robust error management
+13. **Testing Ready**: Structure supports unit tests
+14. **Extensible**: Easy to add new features
 
 ## 📝 Example Usage
 
@@ -253,7 +257,8 @@ Based on the original VBA Excel solution, improved with:
 
 ---
 
-**Version:** 2.0.0  
-**Algorithm:** Best Fit Decreasing (BFD)  
+**Version:** 2.1.0  
+**Algorithms:** BFD, FFD, Heuristic  
+**New Features:** Saw kerf support, visual bar representation  
 **Author:** Converted from VBA to Python  
 **Date:** November 2025
