@@ -1,9 +1,24 @@
+# Streamlit Konfiguration
 [global]
 developmentMode = false
 
 [server]
 headless = true
-port = 8501
+enableCORS = true
+enableXsrfProtection = true
+maxUploadSize = 50
 
 [browser]
 gatherUsageStats = false
+
+[client]
+toolbarMode = "viewer"
+showSidebarNavigation = true
+
+# Theme-Konfiguration auskommentiert, damit Benutzer im Settings-Menü Theme ändern kann
+# [theme]
+# primaryColor = "#1f4788"
+# backgroundColor = "#ffffff"
+# secondaryBackgroundColor = "#f0f2f6"
+# textColor = "#262730"
+# font = "sans serif"

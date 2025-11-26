@@ -198,9 +198,274 @@ def main():
     )
     
     # Main content
-    tab1, tab2, tab3 = st.tabs(["📤 Upload & Optimierung", "📊 Statistiken", "ℹ️ Hilfe"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📝 Manuelle Eingabe", "📤 Excel Upload", "📊 Statistiken", "ℹ️ Hilfe"])
     
     with tab1:
+        st.header("✍️ Schnitte manuell eingeben")
+        st.markdown("Geben Sie Ihre Schnittliste direkt hier ein - keine Excel-Datei erforderlich!")
+        
+        # Initialize session state for manual entries
+        if 'manual_entries' not in st.session_state:
+            st.session_state['manual_entries'] = []
+        
+        # Input form
+        st.subheader("Neuen Schnitt hinzufügen")
+        
+        col1, col2, col3, col4, col5 = st.columns([2, 1, 2, 3, 1])
+        
+        with col1:
+            new_length = st.number_input("Länge (mm)", min_value=1, max_value=int(bar_length), value=1000, step=10, key="new_length")
+        
+        with col2:
+            new_quantity = st.number_input("Anzahl", min_value=1, max_value=1000, value=1, step=1, key="new_quantity")
+        
+        with col3:
+            new_material = st.text_input("Material-Code", value="ST37", max_chars=20, key="new_material")
+        
+        with col4:
+            new_material_name = st.text_input("Materialname", value="Stahl S235JR", max_chars=50, key="new_material_name")
+        
+        with col5:
+            st.write("")  # Spacer
+            st.write("")  # Spacer
+            if st.button("➕ Hinzufügen", use_container_width=True):
+                if new_material.strip() and new_material_name.strip():
+                    st.session_state['manual_entries'].append({
+                        'Länge (mm)': new_length,
+                        'Anzahl': new_quantity,
+                        'Material': new_material.strip(),
+                        'Materialname': new_material_name.strip()
+                    })
+                    st.success(f"✅ {new_quantity}x {new_length}mm ({new_material}) hinzugefügt")
+                    st.rerun()
+                else:
+                    st.error("⚠️ Material-Code und Materialname dürfen nicht leer sein!")
+        
+        # Quick add presets
+        st.markdown("**🚀 Schnelleingabe:**")
+        col_a, col_b, col_c = st.columns(3)
+        
+        with col_a:
+            if st.button("Standard-Stahl (ST37)", use_container_width=True):
+                st.session_state['manual_entries'].extend([
+                    {'Länge (mm)': 2500, 'Anzahl': 3, 'Material': 'ST37', 'Materialname': 'Stahl S235JR'},
+                    {'Länge (mm)': 1800, 'Anzahl': 5, 'Material': 'ST37', 'Materialname': 'Stahl S235JR'},
+                    {'Länge (mm)': 1200, 'Anzahl': 4, 'Material': 'ST37', 'Materialname': 'Stahl S235JR'},
+                ])
+                st.rerun()
+        
+        with col_b:
+            if st.button("Aluminium (ALU)", use_container_width=True):
+                st.session_state['manual_entries'].extend([
+                    {'Länge (mm)': 2400, 'Anzahl': 2, 'Material': 'ALU', 'Materialname': 'Aluminium 6060'},
+                    {'Länge (mm)': 1500, 'Anzahl': 4, 'Material': 'ALU', 'Materialname': 'Aluminium 6060'},
+                ])
+                st.rerun()
+        
+        with col_c:
+            if st.button("Edelstahl (INOX)", use_container_width=True):
+                st.session_state['manual_entries'].extend([
+                    {'Länge (mm)': 2200, 'Anzahl': 3, 'Material': 'INOX', 'Materialname': 'Edelstahl 316'},
+                    {'Länge (mm)': 1000, 'Anzahl': 6, 'Material': 'INOX', 'Materialname': 'Edelstahl 316'},
+                ])
+                st.rerun()
+        
+        st.markdown("---")
+        
+        # Display current entries
+        if st.session_state['manual_entries']:
+            st.subheader(f"📋 Aktuelle Schnittliste ({len(st.session_state['manual_entries'])} Einträge)")
+            
+            # Create DataFrame for display
+            df_entries = pd.DataFrame(st.session_state['manual_entries'])
+            
+            # Add delete buttons
+            col_delete, col_table = st.columns([1, 9])
+            
+            with col_delete:
+                st.write("")
+                st.write("")
+                if st.button("🗑️ Alle löschen", use_container_width=True):
+                    st.session_state['manual_entries'] = []
+                    st.rerun()
+            
+            with col_table:
+                # Editable dataframe
+                edited_df = st.data_editor(
+                    df_entries,
+                    num_rows="dynamic",
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "Länge (mm)": st.column_config.NumberColumn(
+                            "Länge (mm)",
+                            min_value=1,
+                            max_value=int(bar_length),
+                            step=1,
+                            format="%d mm"
+                        ),
+                        "Anzahl": st.column_config.NumberColumn(
+                            "Anzahl",
+                            min_value=1,
+                            max_value=1000,
+                            step=1
+                        ),
+                        "Material": st.column_config.TextColumn("Material", max_chars=20),
+                        "Materialname": st.column_config.TextColumn("Materialname", max_chars=50)
+                    }
+                )
+                
+                # Update session state if edited
+                if not edited_df.equals(df_entries):
+                    st.session_state['manual_entries'] = edited_df.to_dict('records')
+            
+            # Statistics
+            total_cuts = sum(entry['Anzahl'] for entry in st.session_state['manual_entries'])
+            unique_materials = len(set(entry['Material'] for entry in st.session_state['manual_entries']))
+            
+            col_stat1, col_stat2, col_stat3 = st.columns(3)
+            col_stat1.metric("Gesamt Schnitte", total_cuts)
+            col_stat2.metric("Materialien", unique_materials)
+            col_stat3.metric("Einträge", len(st.session_state['manual_entries']))
+            
+            st.markdown("---")
+            
+            # Optimize button
+            if st.button("🚀 Optimierung starten", type="primary", use_container_width=True):
+                with st.spinner(f"Optimierung läuft ({algorithm})..."):
+                    # Convert manual entries to Cut objects
+                    cuts = []
+                    for entry in st.session_state['manual_entries']:
+                        for _ in range(entry['Anzahl']):
+                            cuts.append(Cut(
+                                length=float(entry['Länge (mm)']),
+                                material_code=entry['Material'],
+                                material_name=entry['Materialname']
+                            ))
+                    
+                    optimizer = CuttingOptimizer(bar_length=bar_length, algorithm=algorithm, kerf=kerf)
+                    results = optimizer.optimize_by_material(cuts, multiplier=multiplier)
+                    
+                    # Store in session state
+                    st.session_state['results'] = results
+                    st.session_state['bar_length'] = bar_length
+                    st.session_state['multiplier'] = multiplier
+                    st.session_state['algorithm'] = algorithm
+                    st.session_state['kerf'] = kerf
+                
+                st.success(f"✅ Optimierung abgeschlossen mit {algorithm}!")
+                
+                # Display results (same as Excel upload)
+                st.header("🎯 Ergebnisse")
+                
+                for material_code, data in results.items():
+                    with st.expander(f"**{material_code}** - {data['name']}", expanded=True):
+                        bars = data['bars']
+                        
+                        # Statistics
+                        col1, col2, col3, col4 = st.columns(4)
+                        
+                        total_bars = len(bars)
+                        total_cuts = sum(len(bar.cuts) for bar in bars)
+                        total_waste = sum(bar.waste for bar in bars)
+                        avg_efficiency = sum(bar.efficiency for bar in bars) / len(bars) if bars else 0
+                        
+                        col1.metric("Stangen", total_bars)
+                        col2.metric("Schnitte", total_cuts)
+                        col3.metric("Verschnitt", f"{total_waste:.0f} mm")
+                        col4.metric("Ø Effizienz", f"{avg_efficiency:.1f}%")
+                        
+                        # Visual representation of bars
+                        st.markdown("**📊 Visuelle Darstellung der Schnitte:**")
+                        for bar in bars[:10]:  # Show first 10 bars
+                            st.markdown(create_bar_visualization(bar, bar_length, data['name']), unsafe_allow_html=True)
+                            st.markdown("<br>", unsafe_allow_html=True)
+                        
+                        if len(bars) > 10:
+                            st.info(f"ℹ️ {len(bars) - 10} weitere Stangen nicht visualisiert (siehe Tabelle unten)")
+                        
+                        # Bar details table
+                        bar_data = []
+                        for bar in bars:
+                            bar_data.append({
+                                'Stange': bar.bar_number,
+                                'Schnitte': ' / '.join(f"{c:.1f}" for c in bar.cuts),
+                                'Anzahl': len(bar.cuts),
+                                'Gesamt': f"{bar.total_used:.1f} mm",
+                                'Rest': f"{bar.waste:.1f} mm",
+                                'Effizienz': f"{bar.efficiency:.1f}%"
+                            })
+                        
+                        st.dataframe(pd.DataFrame(bar_data), use_container_width=True)
+                
+                # Export results
+                st.markdown("---")
+                st.subheader("📥 Export-Optionen")
+                
+                col1, col2, col3 = st.columns(3)
+                
+                # Excel Export
+                with col1:
+                    output_path = "zuschnitt_optimiert.xlsx"
+                    ExcelHandler.write_results_to_excel(results, output_path, bar_length)
+                    
+                    with open(output_path, "rb") as file:
+                        st.download_button(
+                            label="📊 Excel herunterladen",
+                            data=file,
+                            file_name="zuschnitt_optimiert.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True
+                        )
+                
+                # PDF Export - Compact
+                with col2:
+                    from pdf_generator import WorkPlanPDFGenerator
+                    
+                    pdf_gen = WorkPlanPDFGenerator(results, bar_length, kerf, algorithm)
+                    pdf_compact = pdf_gen.generate_compact_plan()
+                    
+                    st.download_button(
+                        label="📄 PDF Kompakt",
+                        data=pdf_compact,
+                        file_name=f"arbeitsplan_kompakt_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                        help="Kompakter Arbeitsplan - 1 Seite pro Material"
+                    )
+                
+                # PDF Export - Visual
+                with col3:
+                    pdf_visual = pdf_gen.generate_visual_plan()
+                    
+                    st.download_button(
+                        label="📋 PDF Visuell",
+                        data=pdf_visual,
+                        file_name=f"arbeitsplan_visuell_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                        help="Visueller Arbeitsplan mit Grafiken und Checklisten"
+                    )
+        
+        else:
+            st.info("👆 Fügen Sie Schnitte zur Liste hinzu, um mit der Optimierung zu beginnen.")
+            
+            # Show example
+            with st.expander("📖 Beispiel ansehen"):
+                st.markdown("""
+                **Beispiel-Eingabe:**
+                
+                | Länge (mm) | Anzahl | Material | Materialname |
+                |------------|--------|----------|--------------|
+                | 2500 | 3 | ST37 | Stahl S235JR |
+                | 1800 | 5 | ST37 | Stahl S235JR |
+                | 1200 | 4 | ALU | Aluminium 6060 |
+                
+                Die Optimierung gruppiert automatisch nach Material und berechnet
+                die effizienteste Aufteilung auf Standardstangen.
+                """)
+    
+    with tab2:
         st.header("Excel-Datei hochladen")
         st.markdown("""
         Laden Sie eine Excel-Datei mit folgender Struktur hoch:
@@ -380,7 +645,7 @@ def main():
                 st.error(f"❌ Fehler bei der Verarbeitung: {str(e)}")
                 st.exception(e)
     
-    with tab2:
+    with tab3:
         st.header("📊 Statistiken & Visualisierungen")
         
         if 'results' in st.session_state:
@@ -414,7 +679,7 @@ def main():
         else:
             st.info("ℹ️ Führen Sie zuerst eine Optimierung durch, um Statistiken zu sehen.")
     
-    with tab3:
+    with tab4:
         st.header("ℹ️ Über diese Anwendung")
         
         st.markdown("""
