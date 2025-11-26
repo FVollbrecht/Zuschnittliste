@@ -4,7 +4,6 @@ Excel input/output handler for cutting optimization.
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils.dataframe import dataframe_to_rows
 from typing import List, Dict
 from pathlib import Path
 

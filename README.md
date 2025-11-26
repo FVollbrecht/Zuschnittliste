@@ -10,6 +10,7 @@ Modern Python application for optimizing material cutting lists using the **Firs
 - ✅ **Saw Kerf**: Accounts for blade thickness/cutting loss
 - ✅ **Visual Bars**: SVG visualization of cuts on each bar
 - ✅ **Excel I/O**: Read from and write to Excel files
+- ✅ **PDF Export**: Professional work plans (Compact & Visual)
 - ✅ **Web Interface**: User-friendly Streamlit UI
 - ✅ **Charts**: Efficiency and waste analysis with plotly
 - ✅ **Statistics**: Comprehensive optimization metrics
@@ -74,14 +75,33 @@ Your Excel file should have a sheet named **"Stueckliste"** with the following c
 - **Material**: Material code (e.g., ST37, ALU, ST52)
 - **Materialname**: Full material description
 
-## 📤 Output Format
+## 📤 Output Formats
 
-The application generates an Excel file with sheet **"Zuschnitt"** containing:
+The application provides three export options:
 
+### 1. Excel Export
+Excel file with sheet **"Zuschnitt"** containing:
 - **Material sections**: Grouped by material type
 - **Bar assignments**: Each bar with its cuts
 - **Statistics**: Total bars, cuts, waste, and efficiency
 - **Summary**: Overall optimization results
+
+### 2. PDF Export - Kompakter Arbeitsplan
+Professional work plan with:
+- ✅ Clean table layout (1 page per material)
+- ✅ Material information header
+- ✅ Complete cutting list with checkboxes
+- ✅ Statistics and efficiency metrics
+- ✅ Notes and signature fields
+- 📄 **Perfect for:** Workshop distribution, quality control
+
+### 3. PDF Export - Visueller Arbeitsplan
+Visual work plan with:
+- ✅ Graphical bar representation
+- ✅ Cut-by-cut checklist overview
+- ✅ Visual progress tracking
+- ✅ Grouped by cut lengths
+- 📊 **Perfect for:** Visual learners, training, quick overview
 
 ### Example Output
 

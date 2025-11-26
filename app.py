@@ -6,6 +6,7 @@ import pandas as pd
 from pathlib import Path
 import plotly.graph_objects as go
 import plotly.express as px
+from datetime import datetime
 
 from optimizer import CuttingOptimizer, Cut, Bar
 from excel_handler import ExcelHandler
@@ -327,16 +328,52 @@ def main():
                             st.dataframe(pd.DataFrame(bar_data), use_container_width=True)
                     
                     # Export results
-                    output_path = "zuschnitt_optimiert.xlsx"
-                    ExcelHandler.write_results_to_excel(results, output_path, bar_length)
+                    st.markdown("---")
+                    st.subheader("📥 Export-Optionen")
                     
-                    with open(output_path, "rb") as file:
+                    col1, col2, col3 = st.columns(3)
+                    
+                    # Excel Export
+                    with col1:
+                        output_path = "zuschnitt_optimiert.xlsx"
+                        ExcelHandler.write_results_to_excel(results, output_path, bar_length)
+                        
+                        with open(output_path, "rb") as file:
+                            st.download_button(
+                                label="📊 Excel herunterladen",
+                                data=file,
+                                file_name="zuschnitt_optimiert.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                use_container_width=True
+                            )
+                    
+                    # PDF Export - Compact
+                    with col2:
+                        from pdf_generator import WorkPlanPDFGenerator
+                        
+                        pdf_gen = WorkPlanPDFGenerator(results, bar_length, kerf, algorithm)
+                        pdf_compact = pdf_gen.generate_compact_plan()
+                        
                         st.download_button(
-                            label="⬇️ Ergebnisse als Excel herunterladen",
-                            data=file,
-                            file_name="zuschnitt_optimiert.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            use_container_width=True
+                            label="📄 PDF Kompakt",
+                            data=pdf_compact,
+                            file_name=f"arbeitsplan_kompakt_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                            help="Kompakter Arbeitsplan - 1 Seite pro Material"
+                        )
+                    
+                    # PDF Export - Visual
+                    with col3:
+                        pdf_visual = pdf_gen.generate_visual_plan()
+                        
+                        st.download_button(
+                            label="📋 PDF Visuell",
+                            data=pdf_visual,
+                            file_name=f"arbeitsplan_visuell_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf",
+                            mime="application/pdf",
+                            use_container_width=True,
+                            help="Visueller Arbeitsplan mit Grafiken und Checklisten"
                         )
                 
             except Exception as e:
